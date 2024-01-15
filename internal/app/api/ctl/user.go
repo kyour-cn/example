@@ -6,6 +6,7 @@ import (
 	"gourd/internal/app"
 	"gourd/internal/orm/model"
 	"gourd/internal/orm/query"
+	"gourd/internal/tools"
 	"net/http"
 )
 
@@ -14,19 +15,32 @@ type UserController struct {
 	app.BaseController //继承基础控制器
 }
 
+// Token 获取token
+func (ctl *UserController) Token(w http.ResponseWriter, _ *http.Request) {
+
+	token := tools.RandStringRunes(16)
+
+	// 响应结果
+	_ = ctl.Success(w, "", token)
+}
+
 // Info 获取用户信息
 func (ctl *UserController) Info(w http.ResponseWriter, _ *http.Request) {
 
+	qu := query.User
 	// 需要查询的字段
 	fields := []field.Expr{
-		query.User.ID,
-		query.User.Username,
+		qu.ID,
+		qu.Username,
 	}
 
-	user, _ := query.User.
-		Where(query.User.ID.Eq(2)).
+	user, err := qu.
+		Where(qu.ID.Eq(1)).
 		Select(fields...).
 		First()
+	if err != nil {
+		fmt.Println("查询失败：" + err.Error())
+	}
 
 	// 响应结果
 	_ = ctl.Success(w, "", user)

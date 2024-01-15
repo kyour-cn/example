@@ -1,14 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-cn">
 <head>
     <meta charset="UTF-8">
-    <title>Test Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"/>
+    <title>Ws示例程序</title>
+    <style>
+        p{
+            margin: 0;
+        }
+        #console_log{
+            background: #EEE;
+            border-radius: 5px;
+            margin: 5px;
+            padding: 5px;
+            height: 100px;
+            overflow-y: scroll;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Test Html</h1>
-<hr>
-<p>Test Paragraph</p>
+<div id="console">
+    <div style="padding: 5px 0;">
+        <label for="token">Token：</label><input type="text" id="token" value="25891260ca7b492e13e47993ad0c9d73" onchange="TOKEN=this.value">
+        <button onclick="connWs()" id="conn_btn">开始连接</button>
+        <button onclick="cleanLog()">清空控制台日志</button>
+    </div>
+    <div>
+        <label for="token">WS测试：</label>
+        <button onclick="Ws.test()">测试</button>
+    </div>
+    <div style="padding: 5px 0;">
+        <label for="token">WS消息：<input type="text" id="send_msg" value=""></label>
+        <button onclick="sendMsg()">发送</button>
+    </div>
+
+    <div style="padding-bottom: 5px;">
+        <label for="token">API测试：</label>
+        <button onclick="Api.token()">获取token</button>
+        <button onclick="Api.getInfo()">获取信息</button>
+    </div>
+</div>
+<div id="console_log">
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="./test.js"></script>
+<script>
+
+    let TOKEN = document.getElementById('token').value;
+
+    const ws_rul = "ws://"+location.host+"/ws";
+    const api_rul = "";
+
+    let ws,heartId;
+
+    const connBtn = document.getElementById('conn_btn')
+
+    //Ws功能测试
+    const Ws = {
+        test(){
+            sendData({
+                cmd: "test",
+                TOKEN
+            })
+        }
+    }
+
+    //API接口功能测试
+    const Api = {
+        base_uri: api_rul,
+
+        token(){
+            App.ajax({
+                base: this.base_uri,
+                url: '/api/user/token',
+                data: {
+                    id: 1
+                },
+            }, (ret, err) => {
+                if(ret){
+                    log("获取Token："+JSON.stringify(ret))
+                }else{
+                    log("获取Token："+JSON.stringify(err), 'red')
+                }
+            })
+        },
+        getInfo(){
+            App.ajax({
+                base: this.base_uri,
+                url: '/api/user/info',
+                headers: {TOKEN}
+            }, (ret, err) => {
+                if(ret){
+                    log("获取信息："+JSON.stringify(ret))
+                }else{
+                    log("获取信息错误："+JSON.stringify(err), 'red')
+                }
+            })
+        }
+    }
+
+</script>
 
 </body>
 </html>

@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-gourd/gourd/config"
 	apiRoute "gourd/internal/app/api/route"
+	"gourd/internal/app/ws"
 	"net/http"
 	"os"
 )
@@ -27,9 +28,9 @@ func Register() {
 	r := GetRouter()
 
 	// 主页
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("hello gourd!"))
-	})
+	//r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	//	_, _ = w.Write([]byte("hello gourd!"))
+	//})
 
 	// 404响应
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
@@ -55,5 +56,8 @@ func Register() {
 	apiGroup := chi.NewRouter().
 		Group(apiRoute.RegisterRoute)
 	r.Mount("/api", apiGroup)
+
+	// 注册ws路由
+	r.HandleFunc("/ws", ws.Handle)
 
 }
