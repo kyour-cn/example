@@ -90,7 +90,10 @@
             App.ajax({
                 base: this.base_uri,
                 url: '/api/user/info',
-                headers: {TOKEN}
+                headers: {TOKEN},
+                data: {
+                    id: 1
+                },
             }, (ret, err) => {
                 if(ret){
                     log("获取信息："+JSON.stringify(ret))

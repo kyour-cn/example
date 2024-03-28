@@ -64,6 +64,10 @@ function sendData(msg){
     log("发送："+ msg)
 }
 
+function jsonToUrlParam(json) {
+    return Object.keys(json).map(key => key + '=' + json[key]).join('&');
+}
+
 const App = {
 
     ajax(conf, callback){
@@ -71,18 +75,17 @@ const App = {
             conf.url = conf.base + conf.url;
         }
         const _conf = {
-            url: conf.url,
-            method: conf.method ? conf.method : 'get',
+            method: conf.method ? conf.method : 'GET',
             timeout: conf.timeout ? conf.timeout : 5 * 1000
         }
 
         if(conf.data){
-            if(_conf.method === 'get'){
-                _conf.params = conf.data;
+            if(_conf.method === 'GET'){
+                conf.url += "?" + jsonToUrlParam(conf.data);
             }else{
-                _conf.data = new FormData();
+                _conf.body = new FormData();
                 for(const i in conf.data){
-                    _conf.data.append(i, conf.data[i]);
+                    _conf.body.append(i, conf.data[i]);
                 }
             }
         }
@@ -90,14 +93,14 @@ const App = {
             _conf.headers = conf.headers
         }
 
-        axios.request(_conf)
-            .then(function(res){
-                callback(res.data, null);
+        fetch(conf.url, _conf)
+            .then(res => res.json())
+            .then(data => {
+                callback(data, null)
             })
-            .catch(function(err){
-                callback(null, err);
-            });
-
+            .catch(err => {
+                callback(null, err)
+            })
     },
 }
 
